@@ -12,7 +12,7 @@ import java.time.LocalDate
 class ProductItem(val itemViewBinding: ItemProductBinding) : RecyclerView.ViewHolder(itemViewBinding.root) {
     fun onBind(productItem: Product) = with(itemViewBinding) {
         name.setText(productItem.name)
-        quantity.setText(productItem.quantity)
+        quantity.setText(productItem.quantity.toString())
         expDate.setText(productItem.expiredDate.toString())
         if (productItem.expiredDate.isBefore(LocalDate.now())) {
             expired.setText("Yes")
@@ -37,7 +37,7 @@ class ProductListAdapter : RecyclerView.Adapter<ProductItem>() {
         }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductItem {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ItemProductBinding.inflate(layoutInflater)
+        val binding = ItemProductBinding.inflate(layoutInflater, parent, false)
         return ProductItem(binding);
     }
 
