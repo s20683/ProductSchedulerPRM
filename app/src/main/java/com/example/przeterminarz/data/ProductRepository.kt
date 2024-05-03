@@ -4,4 +4,5 @@ import com.example.przeterminarz.model.Product
 
 interface ProductRepository {
     fun getProductList(): List<Product>
+    fun addProduct(product: Product)
 }

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.FormFragment">
+
+    <EditText
+        android:id="@+id/field_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/label_name"
+        app:layout_constraintTop_toBottomOf="@+id/label_name" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.04" />
+
+    <TextView
+        android:id="@+id/label_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="20dp"
+        android:text="Name:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
+
+    <TextView
+        android:id="@+id/label_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Category:"
+        app:layout_constraintStart_toStartOf="@+id/field_name"
+        app:layout_constraintTop_toBottomOf="@+id/field_name" />
+
+    <TextView
+        android:id="@+id/label_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="11dp"
+        android:text="Quantity:"
+        app:layout_constraintStart_toStartOf="@+id/field_category"
+        app:layout_constraintTop_toBottomOf="@+id/field_category" />
+
+    <EditText
+        android:id="@+id/field_quantity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="1"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="@+id/field_category"
+        app:layout_constraintStart_toStartOf="@+id/label_quantity"
+        app:layout_constraintTop_toBottomOf="@+id/label_quantity" />
+
+    <TextView
+        android:id="@+id/label_ejected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Ejected:"
+        app:layout_constraintStart_toStartOf="@+id/field_quantity"
+        app:layout_constraintTop_toBottomOf="@+id/field_quantity" />
+
+    <Switch
+        android:id="@+id/switch_ejected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/label_ejected"
+        app:layout_constraintTop_toBottomOf="@+id/label_ejected"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <TextView
+        android:id="@+id/label_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Exp Date:"
+        app:layout_constraintStart_toStartOf="@+id/switch_ejected"
+        app:layout_constraintTop_toBottomOf="@+id/switch_ejected" />
+
+    <CalendarView
+        android:id="@+id/field_date"
+        android:layout_width="368dp"
+        android:layout_height="294dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/field_quantity"
+        app:layout_constraintStart_toStartOf="@+id/label_date"
+        app:layout_constraintTop_toBottomOf="@+id/label_date" />
+
+    <Spinner
+        android:id="@+id/field_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="@+id/field_name"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/label_category"
+        app:layout_constraintTop_toBottomOf="@+id/label_category" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

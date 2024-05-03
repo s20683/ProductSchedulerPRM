@@ -10,4 +10,7 @@ object ProductRepositoryImpl : ProductRepository{
         Product(R.drawable.brokul, "Brokuł", 3, LocalDate.now().plusDays(1),"Vegetables", false),
     )
     override fun getProductList(): List<Product> = productList
+    override fun addProduct(product: Product) {
+        productList.add(product)
+    }
 }

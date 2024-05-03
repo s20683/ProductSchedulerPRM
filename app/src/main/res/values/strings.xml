@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PrzeTerminarz</string>
+    <string name="save">Zapisz</string>
+    <string name="add">Dodaj</string>
 </resources>
