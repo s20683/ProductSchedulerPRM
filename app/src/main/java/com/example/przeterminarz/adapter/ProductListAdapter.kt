@@ -2,24 +2,31 @@ package com.example.przeterminarz.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.przeterminarz.R
 import com.example.przeterminarz.databinding.ItemProductBinding
 import com.example.przeterminarz.model.Product
 import java.time.LocalDate
+import kotlin.coroutines.coroutineContext
 
 class ProductItem(val itemViewBinding: ItemProductBinding) : RecyclerView.ViewHolder(itemViewBinding.root) {
     fun onBind(productItem: Product) = with(itemViewBinding) {
+        val context = itemView.context
+
         name.setText(productItem.name)
         quantity.setText(productItem.quantity.toString())
+        mainExpDateLabel.text = context.getString(R.string.product_exp_date)
+        mainCategoryLabel.text = context.getString(R.string.product_category)
+        mainEjectedLabel.text = context.getString(R.string.product_ejected)
         expDate.setText(productItem.expiredDate.toString())
         if (productItem.expiredDate.isBefore(LocalDate.now())) {
-            expired.setText("Yes")
+            expiredButton.isChecked = false
         }
         else {
-            expired.setText("No")
+            expiredButton.isChecked = true
         }
+
         category.setText(productItem.category)
         if (productItem.ejected)
             ejected.setText("Yes")

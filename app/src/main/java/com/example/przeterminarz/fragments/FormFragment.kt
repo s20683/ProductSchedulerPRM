@@ -1,12 +1,16 @@
 package com.example.przeterminarz.fragments
 
+import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.przeterminarz.R
 import com.example.przeterminarz.data.ProductRepository
@@ -26,6 +30,8 @@ class FormFragment : Fragment() {
     private var date: LocalDate = LocalDate.now()
     private var category: String = ""
     private var checked: Boolean = false
+    private val categories = arrayOf("Produkty Spożywcze", "Kosmetyki", "Leki")
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +50,7 @@ class FormFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         return FragmentFormBinding.inflate(layoutInflater, container, false)
             .also {
                 binding = it
@@ -54,6 +61,22 @@ class FormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         updateButtonBasedOnType()
+        binding.labelName.text = getString(R.string.product_name)
+        binding.fieldName.hint = getString(R.string.product_name2)
+        binding.labelCategory.text = getString(R.string.product_category)
+        binding.labelQuantity.text = getString(R.string.product_qty)
+        binding.labelEjected.text = getString(R.string.product_ejected)
+        binding.labelDate.text = getString(R.string.product_exp_date)
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.fieldCategory.adapter = adapter
+
+        binding.buttonDate.text = getString(R.string.select_date)
+        binding.buttonDate.setOnClickListener {
+            showDatePicker()
+        }
+
 
         binding.fieldCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -66,9 +89,10 @@ class FormFragment : Fragment() {
             }
         }
 
-        binding.fieldDate.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            date = LocalDate.of(year, month + 1, dayOfMonth)
-        }
+//        binding.fieldDate.setOnDateChangeListener { _, year, month, dayOfMonth ->
+//            date = LocalDate.of(year, month + 1, dayOfMonth)
+//        }
+
 
         binding.switchEjected.setOnCheckedChangeListener { _, isChecked ->
             checked = isChecked
@@ -83,6 +107,26 @@ class FormFragment : Fragment() {
             saveProduct()
             findNavController().popBackStack()
         }
+    }
+
+    private fun showDatePicker() {
+        val today = LocalDate.now()
+        val datePickerDialog = DatePickerDialog(requireContext(),
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                if (selectedDate.isBefore(today)) {
+                    Toast.makeText(context, "Past dates are not allowed.", Toast.LENGTH_SHORT).show()
+                    // Optionally reset the DatePicker to today's date or reopen the dialog
+                } else {
+                    date = selectedDate
+                    binding.buttonDate.text = date.toString()
+                    // Update your UI accordingly
+                }
+            }, today.year, today.monthValue - 1, today.dayOfMonth
+        )
+
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000 // Disables past dates
+        datePickerDialog.show()
     }
 
 
