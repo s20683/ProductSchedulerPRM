@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.przeterminarz.R
@@ -43,7 +44,11 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        productListAdapter = ProductListAdapter()
+        productListAdapter = ProductListAdapter {
+            findNavController().navigate(R.id.action_listFragment_to_formFragment,
+                bundleOf("type" to FormType.Edit(it))
+            )
+        }
         binding.productList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = productListAdapter
@@ -51,17 +56,27 @@ class ListFragment : Fragment() {
 
         productListAdapter.productList = productRepository.getProductList()
 
-        findNavController().addOnDestinationChangedListener{controller, destination, arguments ->
-            if (destination.id == R.id.listFragment) {
-                productListAdapter.productList = productRepository.getProductList()
-            }
-        }
 
         binding.addbutton.setOnClickListener{
             findNavController().navigate(R.id.action_listFragment_to_formFragment,
                 bundleOf("type" to FormType.New)
             )
         }
+    }
+
+    fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+        if (destination.id == R.id.listFragment) {
+            productListAdapter.productList = productRepository.getProductList()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        findNavController().addOnDestinationChangedListener(::onDestinationChanged)
+    }
+    override fun onStop() {
+        findNavController().removeOnDestinationChangedListener(::onDestinationChanged)
+        super.onStop()
     }
 
 }

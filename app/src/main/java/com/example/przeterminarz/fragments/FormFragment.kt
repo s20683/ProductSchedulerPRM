@@ -31,7 +31,8 @@ class FormFragment : Fragment() {
     private var category: String = ""
     private var checked: Boolean = false
     private val categories = arrayOf("Produkty Spożywcze", "Kosmetyki", "Leki")
-
+    private var edited : Product? = null
+    private lateinit var categoryAdapter : ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +61,7 @@ class FormFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         updateButtonBasedOnType()
         binding.labelName.text = getString(R.string.product_name)
         binding.fieldName.hint = getString(R.string.product_name2)
@@ -68,9 +70,9 @@ class FormFragment : Fragment() {
         binding.labelEjected.text = getString(R.string.product_ejected)
         binding.labelDate.text = getString(R.string.product_exp_date)
 
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.fieldCategory.adapter = adapter
+        categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.fieldCategory.adapter = categoryAdapter
 
         binding.buttonDate.text = getString(R.string.select_date)
         binding.buttonDate.setOnClickListener {
@@ -97,6 +99,30 @@ class FormFragment : Fragment() {
         binding.switchEjected.setOnCheckedChangeListener { _, isChecked ->
             checked = isChecked
         }
+
+        (type as? FormType.Edit)?.let {
+            edited = productRepository.getProductById(it.id)
+                .also {
+                    with(binding.fieldName){
+                        setText(it.name)
+                    }
+                    with(binding.fieldQuantity) {
+                        setText(it.quantity.toString())
+                    }
+                    with(binding.fieldCategory) {
+                        val categoryPosition = categoryAdapter.getPosition(it.category)
+                        setSelection(categoryPosition)
+                    }
+                    with (binding.switchEjected) {
+                        isChecked = it.ejected
+                    }
+                    with (binding.buttonDate) {
+                        date = it.expiredDate
+                        binding.buttonDate.text = date.toString()
+                    }
+                }
+
+        }
     }
     private fun updateButtonBasedOnType() {
         binding.button.text = when (type) {
@@ -104,7 +130,7 @@ class FormFragment : Fragment() {
             FormType.New -> getString(R.string.add)
         }
         binding.button.setOnClickListener {
-            saveProduct()
+            saveProduct((type as? FormType.Edit)?.id)
             findNavController().popBackStack()
         }
     }
@@ -131,19 +157,31 @@ class FormFragment : Fragment() {
 
 
 
-    private fun saveProduct() {
+    private fun saveProduct(id : Int?) {
         val quantityString = binding.fieldQuantity.text.toString()
         val quantity = if (quantityString.isNotEmpty()) quantityString.toInt() else 0
 
-        val product = Product(
+        val name = binding.fieldName.text.toString()
+        val product = edited?.copy(
+            name =  name,
+            quantity = quantity,
+            expiredDate = date,
+            category = category,
+            ejected = checked
+
+        ) ?: Product(
             R.drawable.brokul,
-            binding.fieldName.text.toString(),
+            name,
             quantity,
             date,
             category,
             checked
         )
-        productRepository.addProduct(product)
+        if (id == null) {
+            productRepository.addProduct(product)
+        } else {
+            productRepository.set(id, product)
+        }
     }
 
 }

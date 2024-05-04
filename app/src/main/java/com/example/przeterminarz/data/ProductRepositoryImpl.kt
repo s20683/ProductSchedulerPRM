@@ -13,4 +13,9 @@ object ProductRepositoryImpl : ProductRepository{
     override fun addProduct(product: Product) {
         productList.add(product)
     }
+
+    override fun getProductById(id: Int): Product = productList[id]
+    override fun set(id: Int, product: Product) {
+        productList[id] = product
+    }
 }

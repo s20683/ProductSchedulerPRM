@@ -10,8 +10,8 @@ import com.example.przeterminarz.model.Product
 import java.time.LocalDate
 import kotlin.coroutines.coroutineContext
 
-class ProductItem(val itemViewBinding: ItemProductBinding) : RecyclerView.ViewHolder(itemViewBinding.root) {
-    fun onBind(productItem: Product) = with(itemViewBinding) {
+class ProductItem(private val itemViewBinding: ItemProductBinding) : RecyclerView.ViewHolder(itemViewBinding.root) {
+    fun onBind(productItem: Product, onItemClick: () -> Unit) = with(itemViewBinding) {
         val context = itemView.context
 
         name.setText(productItem.name)
@@ -33,10 +33,14 @@ class ProductItem(val itemViewBinding: ItemProductBinding) : RecyclerView.ViewHo
         else
             ejected.setText("No")
         image.setImageResource(productItem.icon)
+
+        root.setOnClickListener{
+            onItemClick()
+        }
     }
 }
 
-class ProductListAdapter : RecyclerView.Adapter<ProductItem>() {
+class ProductListAdapter(private val onItemClick: (Int) -> Unit) : RecyclerView.Adapter<ProductItem>() {
     public var productList: List<Product> = emptyList()
         set (value){
             field = value
@@ -51,6 +55,8 @@ class ProductListAdapter : RecyclerView.Adapter<ProductItem>() {
     override fun getItemCount(): Int = productList.size
 
     override fun onBindViewHolder(holder: ProductItem, position: Int) {
-        holder.onBind(productList[position])
+        holder.onBind(productList[position]) {
+            onItemClick(position)
+        }
     }
 }
