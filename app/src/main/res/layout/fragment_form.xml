@@ -75,31 +75,12 @@
         app:layout_constraintTop_toBottomOf="@+id/label_quantity" />
 
     <TextView
-        android:id="@+id/label_ejected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Ejected:"
-        app:layout_constraintStart_toStartOf="@+id/field_quantity"
-        app:layout_constraintTop_toBottomOf="@+id/field_quantity" />
-
-    <Switch
-        android:id="@+id/switch_ejected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/label_ejected"
-        app:layout_constraintTop_toBottomOf="@+id/label_ejected"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
-
-    <TextView
         android:id="@+id/label_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="Exp Date:"
-        app:layout_constraintStart_toStartOf="@+id/switch_ejected"
-        app:layout_constraintTop_toBottomOf="@+id/switch_ejected" />
+        app:layout_constraintStart_toStartOf="@+id/field_quantity"
+        app:layout_constraintTop_toBottomOf="@+id/field_quantity" />
 
     <Spinner
         android:id="@+id/field_category"

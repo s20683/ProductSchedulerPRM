@@ -10,5 +10,5 @@ data class Product(
     val quantity: Int,
     val expiredDate: LocalDate,
     val category: String,
-    val ejected: Boolean
+    var ejected: Boolean
 )

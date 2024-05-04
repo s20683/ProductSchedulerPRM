@@ -18,4 +18,12 @@ object ProductRepositoryImpl : ProductRepository{
     override fun set(id: Int, product: Product) {
         productList[id] = product
     }
+
+    override fun remove(it: Int): Boolean {
+        if (it >= 0 && it < productList.size) {
+            productList.removeAt(it)
+            return true
+        }
+        return false
+    }
 }

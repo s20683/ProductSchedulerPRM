@@ -67,7 +67,7 @@ class FormFragment : Fragment() {
         binding.fieldName.hint = getString(R.string.product_name2)
         binding.labelCategory.text = getString(R.string.product_category)
         binding.labelQuantity.text = getString(R.string.product_qty)
-        binding.labelEjected.text = getString(R.string.product_ejected)
+//        binding.labelEjected.text = getString(R.string.product_ejected)
         binding.labelDate.text = getString(R.string.product_exp_date)
 
         categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
@@ -96,9 +96,9 @@ class FormFragment : Fragment() {
 //        }
 
 
-        binding.switchEjected.setOnCheckedChangeListener { _, isChecked ->
-            checked = isChecked
-        }
+//        binding.switchEjected.setOnCheckedChangeListener { _, isChecked ->
+//            checked = isChecked
+//        }
 
         (type as? FormType.Edit)?.let {
             edited = productRepository.getProductById(it.id)
@@ -113,9 +113,9 @@ class FormFragment : Fragment() {
                         val categoryPosition = categoryAdapter.getPosition(it.category)
                         setSelection(categoryPosition)
                     }
-                    with (binding.switchEjected) {
-                        isChecked = it.ejected
-                    }
+//                    with (binding.switchEjected) {
+//                        isChecked = it.ejected
+//                    }
                     with (binding.buttonDate) {
                         date = it.expiredDate
                         binding.buttonDate.text = date.toString()

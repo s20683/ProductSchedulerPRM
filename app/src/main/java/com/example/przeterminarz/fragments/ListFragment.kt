@@ -1,5 +1,6 @@
 package com.example.przeterminarz.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import com.example.przeterminarz.data.RepositoryLocator
 import com.example.przeterminarz.databinding.ActivityMainBinding
 import com.example.przeterminarz.databinding.FragmentListBinding
 import com.example.przeterminarz.model.FormType
+import java.time.LocalDate
 
 
 class ListFragment : Fragment() {
@@ -44,11 +46,22 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        productListAdapter = ProductListAdapter {
-            findNavController().navigate(R.id.action_listFragment_to_formFragment,
-                bundleOf("type" to FormType.Edit(it))
-            )
-        }
+        productListAdapter = ProductListAdapter( onItemClick = {
+            if (productRepository.getProductById(it).expiredDate.isBefore(LocalDate.now())) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Produkt przeterminowany")
+                    .setMessage("Nie można edytować przeterminowanych produktów.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            } else {
+                findNavController().navigate(
+                    R.id.action_listFragment_to_formFragment,
+                    bundleOf("type" to FormType.Edit(it))
+                )
+            }
+        }, onItemLongClick = {
+            productRepository.remove(it)
+        })
         binding.productList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = productListAdapter
