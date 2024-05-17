@@ -24,6 +24,19 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_product" />
 
+        <TextView
+            android:id="@+id/productCountTextView"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="#f0dcfc"
+            android:gravity="center"
+            android:text="@{String.valueOf(viewModel.productCount)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/filterButton" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addbutton"
             android:layout_width="wrap_content"

@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.findViewTreeLifecycleOwner
 
 object BindingAdapters {
-
     @JvmStatic
     @BindingAdapter(value = ["categories", "category"], requireAll = true)
     fun Spinner.setCategories(categories: MutableLiveData<List<String>>, selectedCategory: MutableLiveData<String>) {

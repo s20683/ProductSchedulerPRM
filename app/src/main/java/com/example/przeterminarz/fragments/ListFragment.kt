@@ -34,6 +34,10 @@ class ListFragment : Fragment() {
             .also {
                 binding = it
                 it.viewModel = viewModel
+
+                viewModel.productCount.observe(viewLifecycleOwner, Observer { count ->
+
+                })
             }
             .root
     }
