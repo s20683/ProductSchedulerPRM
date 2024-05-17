@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import java.time.LocalDate
 
 data class Product(
+    val id:Int,
     @DrawableRes
     val icon: Int,
     val name: String,

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.przeterminarz.R
 import com.example.przeterminarz.data.ProductRepository
@@ -18,6 +19,7 @@ import com.example.przeterminarz.data.RepositoryLocator
 import com.example.przeterminarz.databinding.FragmentFormBinding
 import com.example.przeterminarz.model.FormType
 import com.example.przeterminarz.model.Product
+import com.example.przeterminarz.viewmodel.FormViewModel
 import java.time.LocalDate
 
 private const val TYPE_KEY = "type"
@@ -26,17 +28,16 @@ class FormFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private lateinit var type: FormType
     private lateinit var binding: FragmentFormBinding
-    private lateinit var productRepository: ProductRepository
     private var date: LocalDate = LocalDate.now()
     private var category: String = ""
     private var checked: Boolean = false
     private val categories = arrayOf("Produkty Spożywcze", "Kosmetyki", "Leki")
-    private var edited : Product? = null
     private lateinit var categoryAdapter : ArrayAdapter<String>
+
+    private val viewModel by viewModels<FormViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        productRepository = RepositoryLocator.productRepository
         arguments?.let {
             type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getSerializable(TYPE_KEY, FormType::class.java)
@@ -55,14 +56,21 @@ class FormFragment : Fragment() {
         return FragmentFormBinding.inflate(layoutInflater, container, false)
             .also {
                 binding = it
+                it.viewModel = viewModel
             }
             .root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with(viewModel) {
+            viewModel.init((type as? FormType.Edit)?.id)
+            viewModel.navigation.observe(viewLifecycleOwner) {
+                it.resolve(findNavController())
+            }
+        }
 
-        updateButtonBasedOnType()
+//        updateButtonBasedOnType()
         binding.labelName.text = getString(R.string.product_name)
         binding.fieldName.hint = getString(R.string.product_name2)
         binding.labelCategory.text = getString(R.string.product_category)
@@ -100,40 +108,40 @@ class FormFragment : Fragment() {
 //            checked = isChecked
 //        }
 
-        (type as? FormType.Edit)?.let {
-            edited = productRepository.getProductById(it.id)
-                .also {
-                    with(binding.fieldName){
-                        setText(it.name)
-                    }
-                    with(binding.fieldQuantity) {
-                        setText(it.quantity.toString())
-                    }
-                    with(binding.fieldCategory) {
-                        val categoryPosition = categoryAdapter.getPosition(it.category)
-                        setSelection(categoryPosition)
-                    }
-//                    with (binding.switchEjected) {
-//                        isChecked = it.ejected
+//        (type as? FormType.Edit)?.let {
+//            edited = productRepository.getProductById(it.id)
+//                .also {
+//                    with(binding.fieldName){
+//                        setText(it.name)
 //                    }
-                    with (binding.buttonDate) {
-                        date = it.expiredDate
-                        binding.buttonDate.text = date.toString()
-                    }
-                }
-
-        }
+//                    with(binding.fieldQuantity) {
+//                        setText(it.quantity.toString())
+//                    }
+//                    with(binding.fieldCategory) {
+//                        val categoryPosition = categoryAdapter.getPosition(it.category)
+//                        setSelection(categoryPosition)
+//                    }
+////                    with (binding.switchEjected) {
+////                        isChecked = it.ejected
+////                    }
+//                    with (binding.buttonDate) {
+//                        date = it.expiredDate
+//                        binding.buttonDate.text = date.toString()
+//                    }
+//                }
+//
+//        }
     }
-    private fun updateButtonBasedOnType() {
-        binding.button.text = when (type) {
-            is FormType.Edit -> getString(R.string.save)
-            FormType.New -> getString(R.string.add)
-        }
-        binding.button.setOnClickListener {
-            saveProduct((type as? FormType.Edit)?.id)
-            findNavController().popBackStack()
-        }
-    }
+//    private fun updateButtonBasedOnType() {
+//        binding.button.text = when (type) {
+//            is FormType.Edit -> getString(R.string.save)
+//            FormType.New -> getString(R.string.add)
+//        }
+//        binding.button.setOnClickListener {
+//            saveProduct((type as? FormType.Edit)?.id)
+//            findNavController().popBackStack()
+//        }
+//    }
 
     private fun showDatePicker() {
         val today = LocalDate.now()
@@ -153,35 +161,6 @@ class FormFragment : Fragment() {
 
         datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000 // Disables past dates
         datePickerDialog.show()
-    }
-
-
-
-    private fun saveProduct(id : Int?) {
-        val quantityString = binding.fieldQuantity.text.toString()
-        val quantity = if (quantityString.isNotEmpty()) quantityString.toInt() else 0
-
-        val name = binding.fieldName.text.toString()
-        val product = edited?.copy(
-            name =  name,
-            quantity = quantity,
-            expiredDate = date,
-            category = category,
-            ejected = checked
-
-        ) ?: Product(
-            R.drawable.brokul,
-            name,
-            quantity,
-            date,
-            category,
-            checked
-        )
-        if (id == null) {
-            productRepository.addProduct(product)
-        } else {
-            productRepository.set(id, product)
-        }
     }
 
 }

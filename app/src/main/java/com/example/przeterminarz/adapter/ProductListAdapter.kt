@@ -1,21 +1,21 @@
 package com.example.przeterminarz.adapter
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.przeterminarz.R
 import com.example.przeterminarz.databinding.ItemProductBinding
 import com.example.przeterminarz.model.Product
 import java.time.LocalDate
-import kotlin.coroutines.coroutineContext
 
 class ProductItem(private val itemViewBinding: ItemProductBinding) : RecyclerView.ViewHolder(itemViewBinding.root) {
-    fun onBind(productItem: Product, onItemClick: () -> Unit, onItemLongClick: () -> Boolean) = with(itemViewBinding) {
+    var id: Int = 0
+        private set
+    fun onBind(productItem: Product, onItemClick: (Int) -> Unit, onItemLongClick: () -> Boolean) = with(itemViewBinding) {
         val context = itemView.context
+        id = productItem.id
 
         name.setText(productItem.name)
         quantity.setText(productItem.quantity.toString())
@@ -38,7 +38,7 @@ class ProductItem(private val itemViewBinding: ItemProductBinding) : RecyclerVie
         image.setImageResource(productItem.icon)
 
         root.setOnClickListener{
-            onItemClick()
+            onItemClick(productItem.id)
         }
         root.setOnLongClickListener{
             onItemLongClick()
@@ -46,7 +46,7 @@ class ProductItem(private val itemViewBinding: ItemProductBinding) : RecyclerVie
     }
 }
 
-class ProductListAdapter(private val onItemClick: (Int) -> Unit, private val onItemLongClick: (Int) -> Boolean) : RecyclerView.Adapter<ProductItem>() {
+class ProductListAdapter(private val onItemClick: (Int) -> Unit, private val onItemLongClick: (Int) -> Unit) : RecyclerView.Adapter<ProductItem>() {
     public var productList: List<Product> = emptyList()
         set (value){
             field = value
@@ -61,14 +61,13 @@ class ProductListAdapter(private val onItemClick: (Int) -> Unit, private val onI
 
     override fun onBindViewHolder(holder: ProductItem, position: Int) {
         holder.onBind(productList[position], onItemClick = {
-            onItemClick(position)
+            onItemClick(it)
         }, onItemLongClick = {
-            showDeletionDialog(holder.itemView.context, position)
+            showDeletionDialog(holder.itemView.context, productList[position], position)
             true
         })
     }
-    private fun showDeletionDialog(context: Context, position: Int) {
-        val product = productList[position]
+    private fun showDeletionDialog(context: Context, product: Product, position: Int) {
         if (product.expiredDate.isBefore(LocalDate.now())) {
             AlertDialog.Builder(context)
                 .setTitle("Produkt przeterminowany")
@@ -87,7 +86,7 @@ class ProductListAdapter(private val onItemClick: (Int) -> Unit, private val onI
                 .setTitle("Usunąć produkt?")
                 .setMessage("Czy chcesz usunąć ten produkt z listy?")
                 .setPositiveButton("Usuń") { dialog, _ ->
-                    onItemLongClick(position)
+                    onItemLongClick(product.id)
                     notifyItemRemoved(position)
                     notifyItemRangeChanged(position, productList.size)
                     dialog.dismiss()
