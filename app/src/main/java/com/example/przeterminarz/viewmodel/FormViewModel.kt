@@ -1,13 +1,19 @@
 package com.example.przeterminarz.viewmodel
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.przeterminarz.R
 import com.example.przeterminarz.data.ProductRepository
+import com.example.przeterminarz.data.ProductRepository.Companion.GENERATE_ID
 import com.example.przeterminarz.data.RepositoryLocator
 import com.example.przeterminarz.model.Product
 import com.example.przeterminarz.model.navigation.Destination
 import com.example.przeterminarz.model.navigation.PopBack
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -15,6 +21,7 @@ class FormViewModel : ViewModel() {
 
     private val productRepository: ProductRepository = RepositoryLocator.productRepository
     private var edited: Product? = null
+    val categories = MutableLiveData<List<String>>(listOf("Produkty Spożywcze", "Kosmetyki", "Leki"))
 
     val buttonText = MutableLiveData<Int>()
     val navigation = MutableLiveData<Destination>()
@@ -26,20 +33,26 @@ class FormViewModel : ViewModel() {
     val qty = MutableLiveData<String>("")
 
     fun init(id: Int?){
-        edited = id?.let{
-            productRepository.getProductById(id)
-        }?.also {
-            name.value = it.name
-            category.value = it.category
-            date.value = it.expiredDate.toString()
-            checked.value = it.ejected
-            qty.value = it.quantity.toString()
+        id?.let{
+            viewModelScope.launch {
+                edited = productRepository.getProductById(id).also {
+                    withContext(Dispatchers.Main) {
+                        name.value = it.name
+                        category.value = it.category
+                        date.value = it.expiredDate.toString()
+                        checked.value = it.ejected
+                        qty.value = it.quantity.toString()
+                    }
+                }
+
+            }
         }
         buttonText.value = when(edited) {
             null -> R.string.add
             else -> R.string.save
         }
     }
+
 
     fun onSave() {
         val quantityString = qty.value.toString()
@@ -64,23 +77,28 @@ class FormViewModel : ViewModel() {
                 category = category,
                 ejected = checked
             ) ?: Product(
-                id = productRepository.getNextId(),
-                R.drawable.brokul,
-                name,
-                quantity,
-                it,
-                category,
-                checked
+                id = GENERATE_ID,
+                icon = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888),
+                iconName = "brokul.jpg",
+                name = name,
+                quantity = quantity,
+                expiredDate = it,
+                category = category,
+                ejected = checked
             )
 
-            if (edited == null) {
-                productRepository.addProduct(product)
-            } else {
-                productRepository.set(product.id, product)
+            viewModelScope.launch {
+                if (edited == null) {
+                    productRepository.addProduct(product)
+                } else {
+                    productRepository.set(product)
+                }
+                withContext(Dispatchers.Main) {
+                    navigation.value = PopBack()
+                }
             }
         } ?: run {
-
+            navigation.value = PopBack()
         }
-        navigation.value = PopBack()
     }
 }

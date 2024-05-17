@@ -1,5 +1,11 @@
 package com.example.przeterminarz.data
 
+import android.content.Context
+
 object RepositoryLocator {
-    val productRepository : ProductRepository = ProductRepositoryImpl
+    lateinit var productRepository : ProductRepository
+        private set
+    fun init(context: Context) {
+        productRepository = ProductRepositoryInFile(context)
+    }
 }

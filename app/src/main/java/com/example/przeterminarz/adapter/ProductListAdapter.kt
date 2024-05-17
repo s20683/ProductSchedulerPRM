@@ -35,7 +35,7 @@ class ProductItem(private val itemViewBinding: ItemProductBinding) : RecyclerVie
             ejected.setText("Yes")
         else
             ejected.setText("No")
-        image.setImageResource(productItem.icon)
+        image.setImageBitmap(productItem.icon)
 
         root.setOnClickListener{
             onItemClick(productItem.id)

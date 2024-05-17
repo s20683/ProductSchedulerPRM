@@ -25,13 +25,16 @@ import java.time.LocalDate
 private const val TYPE_KEY = "type"
 
 class FormFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+    object CategoryData {
+        val categories = arrayOf("Produkty Spożywcze", "Kosmetyki", "Leki")
+        val emptyCategory = "--"
+    }
     private lateinit var type: FormType
     private lateinit var binding: FragmentFormBinding
     private var date: LocalDate = LocalDate.now()
     private var category: String = ""
     private var checked: Boolean = false
-    private val categories = arrayOf("Produkty Spożywcze", "Kosmetyki", "Leki")
+//    val categories = arrayOf("Produkty Spożywcze", "Kosmetyki", "Leki")
     private lateinit var categoryAdapter : ArrayAdapter<String>
 
     private val viewModel by viewModels<FormViewModel>()
@@ -57,6 +60,7 @@ class FormFragment : Fragment() {
             .also {
                 binding = it
                 it.viewModel = viewModel
+                binding.lifecycleOwner = viewLifecycleOwner
             }
             .root
     }
@@ -78,7 +82,7 @@ class FormFragment : Fragment() {
 //        binding.labelEjected.text = getString(R.string.product_ejected)
         binding.labelDate.text = getString(R.string.product_exp_date)
 
-        categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, CategoryData.categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.fieldCategory.adapter = categoryAdapter
 
@@ -98,6 +102,7 @@ class FormFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
+
 
 //        binding.fieldDate.setOnDateChangeListener { _, year, month, dayOfMonth ->
 //            date = LocalDate.of(year, month + 1, dayOfMonth)
