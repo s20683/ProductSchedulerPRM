@@ -1,8 +1,12 @@
 package com.example.przeterminarz.fragments
 
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.przeterminarz.R
@@ -24,7 +29,14 @@ import java.time.LocalDate
 
 private const val TYPE_KEY = "type"
 
+
 class FormFragment : Fragment() {
+    companion object {
+        private const val PICK_IMAGE_REQUEST = 1
+    }
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+         binding.imageView.setImageURI(uri)
+    }
     object CategoryData {
         val categories = arrayOf("Produkty Spożywcze", "Kosmetyki", "Leki")
         val emptyCategory = "--"
@@ -90,6 +102,9 @@ class FormFragment : Fragment() {
         binding.buttonDate.setOnClickListener {
             showDatePicker()
         }
+        binding.buttonGallery.setOnClickListener {
+            getContent.launch("image/*")
+        }
 
 
         binding.fieldCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -147,6 +162,7 @@ class FormFragment : Fragment() {
 //            findNavController().popBackStack()
 //        }
 //    }
+
 
     private fun showDatePicker() {
         val today = LocalDate.now()
